@@ -5,11 +5,14 @@ export MDEV_CI="appcircle"
 
 # Appcircle definitions
 api_key=$AC_MAESTRO_API_KEY
+project_id=$AC_MAESTRO_PROJECT_ID
 app_file=$AC_MAESTRO_APP_FILE
 workspace=$AC_MAESTRO_WORKSPACE
 upload_name=$AC_MAESTRO_UPLOAD_NAME
 async=$AC_MAESTRO_ASYNC
 env=$AC_MAESTRO_ENV
+device_os=$AC_MAESTRO_DEVICE_OS
+device_model=$AC_MAESTRO_DEVICE_MODEL
 android_api_level=$AC_MAESTRO_ANDROID_API_LEVEL
 include_tags=$AC_MAESTRO_INCLUDE_TAGS
 exclude_tags=$AC_MAESTRO_EXCLUDE_TAGS
@@ -36,9 +39,16 @@ done
 
 # Test report file
 if [[ "$is_export" == "true" ]]; then
-    if [[ -z "$export_output" ]]; then
-        export_file="report.xml"
-    fi
+    export_file="${export_output:-report.xml}"
+fi
+
+# Device selection: device OS replaces the deprecated Android API level
+if [[ -n "$device_os" && -n "$android_api_level" ]]; then
+    echo "Device OS is set, ignoring the deprecated Android API level ($android_api_level)."
+    android_api_level=""
+fi
+if [[ -z "$project_id" ]]; then
+    echo "Project ID is not set. Maestro selects the project automatically only if your account has a single project."
 fi
 
 set -ex
@@ -63,6 +73,7 @@ EXIT_CODE=0
 
 maestro cloud \
 --apiKey $api_key \
+${project_id:+--project-id "$project_id"} \
 ${branch:+--branch "$branch"} \
 ${repo_name:+--repoName "$repo_name"} \
 ${repo_owner:+--repoOwner "$repo_owner"} \
@@ -70,6 +81,8 @@ ${mapping_file:+--mapping "$mapping_file"} \
 ${upload_name:+--name "$upload_name"} \
 ${is_async:+--async} \
 ${pull_request_id:+--pullRequestId "$pull_request_id"} \
+${device_os:+--device-os "$device_os"} \
+${device_model:+--device-model "$device_model"} \
 ${android_api_level:+--android-api-level "$android_api_level"} \
 ${include_tags:+--include-tags "$include_tags"} \
 ${exclude_tags:+--exclude-tags "$exclude_tags"} \
@@ -81,7 +94,7 @@ $app_file $workspace || EXIT_CODE=$?
 # Export test results
 if [[ -n "$export_file" && -f "$export_file" ]]; then
     test_run_dir="$AC_OUTPUT_DIR/maestro"
-    mkdir "$test_run_dir"
+    mkdir -p "$test_run_dir"
     cp "$export_file" "$test_run_dir/maestro_report.xml"
 fi
 
