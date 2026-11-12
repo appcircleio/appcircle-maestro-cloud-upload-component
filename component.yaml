@@ -9,11 +9,17 @@ inputs:
   title: API key
   description: "Maestro Cloud API key"  
   helpText:
+- key: "AC_MAESTRO_PROJECT_ID"
+  defaultValue: "$AC_MAESTRO_PROJECT_ID"
+  isRequired: false
+  title: Project ID
+  description: "Maestro Cloud Project ID. You can find it in the Maestro Dashboard settings. Required if your Maestro account has more than one project."
+  helpText:
 - key: "AC_MAESTRO_APP_FILE"
   defaultValue: "$AC_MAESTRO_APP_FILE"
   isRequired: true
   title: App File
-  description: "**Android**: `app_file` should point to an x86 compatible APK file. **iOS**: `app_file` should point to an x86 compatible Simulator build packaged in a zip archive."
+  description: "**Android**: `app_file` should point to an ARM compatible or multi-architecture APK file. **iOS**: `app_file` should point to a Simulator build (`.app` directory or a zip archive of it)."
   helpText:
 - key: "AC_MAESTRO_WORKSPACE"
   defaultValue: ".maestro"
@@ -41,11 +47,23 @@ inputs:
   title: Environment variables
   description: "Pass environment variables to your flows"
   helpText: "If you want to pass environment variables along with your upload, add variables separated by a new line or **\n**.i.e VAR1=1\nVAR2=2 ..."
+- key: "AC_MAESTRO_DEVICE_OS"
+  defaultValue: "$AC_MAESTRO_DEVICE_OS"
+  isRequired: false
+  title: Device OS
+  description: "OS version of the cloud device, e.g. `android-34` or `iOS-26-2`. Run `maestro list-cloud-devices` to see all supported values."
+  helpText:
+- key: "AC_MAESTRO_DEVICE_MODEL"
+  defaultValue: "$AC_MAESTRO_DEVICE_MODEL"
+  isRequired: false
+  title: Device model
+  description: "Model of the cloud device, e.g. `pixel_6` or `iPhone-17-Pro`. Run `maestro list-cloud-devices` to see all supported values."
+  helpText:
 - key: "AC_MAESTRO_ANDROID_API_LEVEL"
   defaultValue: "$AC_MAESTRO_ANDROID_API_LEVEL"
   isRequired: false
-  title: Android api level
-  description: "Set the Android api level the devices should run (Default: 30)"
+  title: Android api level (deprecated)
+  description: "Deprecated, use Device OS instead (e.g. `android-34`). Ignored when Device OS is set."
   helpText:
 - key: "AC_MAESTRO_INCLUDE_TAGS"
   defaultValue: "$AC_MAESTRO_INCLUDE_TAGS"
